@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Shield, Award, CheckCircle, Github } from 'lucide-react';
 import { BadgeInfo } from '@/components/badge-display';
 import { BadgeParser } from '@/components/badge-parser';
+import { BadgeStorage } from '@/utils/badge-storage';
 import jsBadgeImage from '@/assets/js-badge-example.png';
 
 const Index = () => {
@@ -75,7 +76,9 @@ const Index = () => {
         badgeInfo = await mockVerifyBadge(input);
       }
       
-      navigate('/result', { state: { badgeInfo } });
+      // Sauvegarder le badge pour permettre le partage
+      const badgeId = BadgeStorage.saveBadge(badgeInfo);
+      navigate(`/result?id=${badgeId}`, { state: { badgeInfo } });
       
       toast({
         title: "Badge vérifié avec succès",

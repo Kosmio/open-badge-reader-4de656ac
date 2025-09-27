@@ -1,0 +1,17 @@
+{
+  "id": "https://zp1v56uxy8rdx5ypatb0ockcb9tr6a-oci3--5173--96435430.local-credentialless.webcontainer-api.io/badge/6872fb56-39f7-41b4-9f7f-7bceb126628c",
+  "name": "ACT Pas à Pas",
+  "type": "Achievement",
+  "image": "https://gyfcxfyhilpakbgwhajq.supabase.co/storage/v1/object/public/badge-images/05c16fe1-38ce-4d5e-b43d-7655959da8ef/1758894198378-seqxjerdx0c.png",
+  "issuer": {
+    "id": "05c16fe1-38ce-4d5e-b43d-7655959da8ef",
+    "name": "mathieu@kosm.io",
+    "type": "Profile"
+  },
+  "@context": "https://purl.imsglobal.org/spec/ob/v3p0/context-3.0.3.json",
+  "criteria": {
+    "narrative": "La lettre d'engagement a été déposée et validée par l'ADEME"
+  },
+  "validFrom": "2025-09-26",
+  "description": "L'entreprises à été accompagnée dans sa stratégie de décarbonation selon la méthode ACT Pas à Pas"
+}

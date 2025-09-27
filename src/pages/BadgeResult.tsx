@@ -1,15 +1,30 @@
-import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { BadgeDisplay, BadgeInfo } from '@/components/badge-display';
 import { ArrowLeft, Download, Share2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { BadgeStorage } from '@/utils/badge-storage';
 
 export default function BadgeResult() {
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
-  const badgeInfo = location.state?.badgeInfo as BadgeInfo;
+  const [badgeInfo, setBadgeInfo] = useState<BadgeInfo | null>(location.state?.badgeInfo || null);
+
+  useEffect(() => {
+    // Si aucune donnée dans le state, essayer de récupérer depuis l'URL
+    if (!badgeInfo) {
+      const badgeId = searchParams.get('id');
+      if (badgeId) {
+        const storedBadge = BadgeStorage.getBadge(badgeId);
+        if (storedBadge) {
+          setBadgeInfo(storedBadge);
+        }
+      }
+    }
+  }, [badgeInfo, searchParams]);
 
   if (!badgeInfo) {
     return (
@@ -29,22 +44,28 @@ export default function BadgeResult() {
   }
 
   const handleShare = async () => {
+    if (!badgeInfo) return;
+    
+    // Sauvegarder le badge et générer un lien partageable
+    const badgeId = BadgeStorage.saveBadge(badgeInfo);
+    const shareUrl = `${window.location.origin}/result?id=${badgeId}`;
+    
     if (navigator.share) {
       try {
         await navigator.share({
           title: `Badge: ${badgeInfo.badge.name}`,
           text: `Vérification du badge "${badgeInfo.badge.name}" émis par ${badgeInfo.issuer.name}`,
-          url: window.location.href,
+          url: shareUrl,
         });
       } catch (error) {
         // User cancelled sharing
       }
     } else {
       // Fallback: copy to clipboard
-      await navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(shareUrl);
       toast({
-        title: "Lien copié",
-        description: "Le lien a été copié dans le presse-papiers",
+        title: "Lien de partage copié",
+        description: "Le lien permet de visualiser ce badge pendant 24h",
       });
     }
   };
