@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { QRScanner } from './qr-scanner';
 
 interface BadgeUploaderProps {
   onBadgeUpload: (file: File | string) => void;
@@ -149,16 +150,23 @@ export function BadgeUploader({ onBadgeUpload, isLoading = false }: BadgeUploade
               disabled={isLoading}
               className="flex-1"
             />
-            <Button 
-              onClick={handleUrlSubmit} 
-              disabled={!urlInput.trim() || isLoading}
-              className="bg-gradient-primary hover:shadow-glow transition-smooth"
-            >
-              Vérifier
-            </Button>
-          </div>
+          <Button 
+            onClick={handleUrlSubmit} 
+            disabled={!urlInput.trim() || isLoading}
+            className="bg-gradient-primary hover:shadow-glow transition-smooth"
+          >
+            Vérifier
+          </Button>
         </div>
-      </Card>
+        
+        <div className="mt-4">
+          <QRScanner onScan={(url) => {
+            setUrlInput(url);
+            onBadgeUpload(url);
+          }} />
+        </div>
+      </div>
+    </Card>
 
       {/* Help Section */}
       <Card className="p-4 bg-accent/20 border-accent/30">

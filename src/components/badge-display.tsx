@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { StatusBadge, BadgeStatus } from './status-badge';
+import { BadgeValidator } from './badge-validator';
 import { Award, User, Building, Calendar, ExternalLink, FileText } from 'lucide-react';
 
 export interface BadgeInfo {
@@ -95,9 +96,10 @@ export function BadgeDisplay({ badgeInfo }: BadgeDisplayProps) {
 
       {/* Detailed Information Tabs */}
       <Tabs defaultValue="summary" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="summary">Résumé</TabsTrigger>
           <TabsTrigger value="details">Détails</TabsTrigger>
+          <TabsTrigger value="validation">Validation</TabsTrigger>
           <TabsTrigger value="json">JSON</TabsTrigger>
         </TabsList>
 
@@ -196,6 +198,11 @@ export function BadgeDisplay({ badgeInfo }: BadgeDisplayProps) {
               </div>
             </Card>
           )}
+        </TabsContent>
+
+        {/* Validation Tab */}
+        <TabsContent value="validation">
+          <BadgeValidator badgeInfo={badgeInfo} />
         </TabsContent>
 
         {/* JSON Tab */}

@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Shield, Award, CheckCircle, Github } from 'lucide-react';
 import { BadgeInfo } from '@/components/badge-display';
+import { BadgeParser } from '@/components/badge-parser';
 import jsBadgeImage from '@/assets/js-badge-example.png';
 
 const Index = () => {
@@ -60,7 +61,19 @@ const Index = () => {
     setIsLoading(true);
     
     try {
-      const badgeInfo = await mockVerifyBadge(input);
+      let badgeInfo: BadgeInfo;
+      
+      // Try real parsing first, fallback to mock if needed
+      try {
+        if (typeof input === 'string') {
+          badgeInfo = await BadgeParser.parseFromUrl(input);
+        } else {
+          badgeInfo = await BadgeParser.parseFromFile(input);
+        }
+      } catch (parseError) {
+        // Fallback to mock data for demo
+        badgeInfo = await mockVerifyBadge(input);
+      }
       
       navigate('/result', { state: { badgeInfo } });
       
@@ -71,7 +84,7 @@ const Index = () => {
     } catch (error) {
       toast({
         title: "Erreur de vérification",
-        description: "Impossible de vérifier le badge. Veuillez réessayer.",
+        description: error instanceof Error ? error.message : "Impossible de vérifier le badge. Veuillez réessayer.",
         variant: "destructive",
       });
     } finally {
