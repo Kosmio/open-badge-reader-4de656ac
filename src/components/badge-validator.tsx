@@ -3,6 +3,7 @@ import { CheckCircle, AlertTriangle, XCircle, Info } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { BadgeInfo } from './badge-display';
+import { useTranslation } from '@/i18n/LanguageProvider';
 
 interface ValidationRule {
   id: string;
@@ -17,169 +18,163 @@ interface BadgeValidatorProps {
 }
 
 export function BadgeValidator({ badgeInfo }: BadgeValidatorProps) {
+  const { t } = useTranslation();
+
   const validateBadge = (): ValidationRule[] => {
     const rules: ValidationRule[] = [];
 
-    // Version validation
     if (badgeInfo.version === '2.0' || badgeInfo.version === '3.0') {
       rules.push({
         id: 'version',
-        name: 'Version Open Badge',
+        name: t('badgeValidator.rules.version.name'),
         status: 'pass',
-        message: `Version ${badgeInfo.version} détectée`,
-        details: `Ce badge utilise la spécification Open Badge ${badgeInfo.version}`
+        message: t('badgeValidator.rules.version.detected', { version: badgeInfo.version }),
+        details: t('badgeValidator.rules.version.details', { version: badgeInfo.version })
       });
     } else {
       rules.push({
         id: 'version',
-        name: 'Version Open Badge',
+        name: t('badgeValidator.rules.version.name'),
         status: 'warning',
-        message: 'Version non reconnue',
-        details: 'La version du badge ne correspond pas aux standards Open Badge connus'
+        message: t('badgeValidator.rules.version.unknown'),
+        details: t('badgeValidator.rules.version.unknownDetails')
       });
     }
 
-    // Required fields validation
     if (badgeInfo.badge.name && badgeInfo.badge.name.trim()) {
       rules.push({
         id: 'name',
-        name: 'Nom du badge',
+        name: t('badgeValidator.rules.name.name'),
         status: 'pass',
-        message: 'Nom présent et valide'
+        message: t('badgeValidator.rules.name.present')
       });
     } else {
       rules.push({
         id: 'name',
-        name: 'Nom du badge',
+        name: t('badgeValidator.rules.name.name'),
         status: 'fail',
-        message: 'Nom manquant ou vide'
+        message: t('badgeValidator.rules.name.missing')
       });
     }
 
-    // Issuer validation
     if (badgeInfo.issuer.name && badgeInfo.issuer.name.trim()) {
       rules.push({
         id: 'issuer',
-        name: 'Émetteur',
+        name: t('badgeValidator.rules.issuer.name'),
         status: 'pass',
-        message: 'Informations émetteur présentes'
+        message: t('badgeValidator.rules.issuer.present')
       });
     } else {
       rules.push({
         id: 'issuer',
-        name: 'Émetteur',
+        name: t('badgeValidator.rules.issuer.name'),
         status: 'fail',
-        message: 'Informations émetteur manquantes'
+        message: t('badgeValidator.rules.issuer.missing')
       });
     }
 
-    // Recipient validation
     if (badgeInfo.recipient.email || badgeInfo.recipient.name || badgeInfo.recipient.identity) {
       rules.push({
         id: 'recipient',
-        name: 'Bénéficiaire',
+        name: t('badgeValidator.rules.recipient.name'),
         status: 'pass',
-        message: 'Informations bénéficiaire présentes'
+        message: t('badgeValidator.rules.recipient.present')
       });
     } else {
       rules.push({
         id: 'recipient',
-        name: 'Bénéficiaire',
+        name: t('badgeValidator.rules.recipient.name'),
         status: 'warning',
-        message: 'Informations bénéficiaire limitées',
-        details: 'Aucune information d\'identification du bénéficiaire trouvée'
+        message: t('badgeValidator.rules.recipient.limited'),
+        details: t('badgeValidator.rules.recipient.details')
       });
     }
 
-    // Criteria validation
     if (badgeInfo.badge.criteria && badgeInfo.badge.criteria.trim()) {
       rules.push({
         id: 'criteria',
-        name: 'Critères',
+        name: t('badgeValidator.rules.criteria.name'),
         status: 'pass',
-        message: 'Critères d\'obtention définis'
+        message: t('badgeValidator.rules.criteria.present')
       });
     } else {
       rules.push({
         id: 'criteria',
-        name: 'Critères',
+        name: t('badgeValidator.rules.criteria.name'),
         status: 'warning',
-        message: 'Critères d\'obtention manquants'
+        message: t('badgeValidator.rules.criteria.missing')
       });
     }
 
-    // Date validation
     if (badgeInfo.issuedOn) {
       const issuedDate = new Date(badgeInfo.issuedOn);
       const now = new Date();
-      
+
       if (issuedDate <= now) {
         rules.push({
           id: 'issued_date',
-          name: 'Date d\'émission',
+          name: t('badgeValidator.rules.issuedDate.name'),
           status: 'pass',
-          message: 'Date d\'émission valide'
+          message: t('badgeValidator.rules.issuedDate.valid')
         });
       } else {
         rules.push({
           id: 'issued_date',
-          name: 'Date d\'émission',
+          name: t('badgeValidator.rules.issuedDate.name'),
           status: 'fail',
-          message: 'Date d\'émission dans le futur'
+          message: t('badgeValidator.rules.issuedDate.future')
         });
       }
     } else {
       rules.push({
         id: 'issued_date',
-        name: 'Date d\'émission',
+        name: t('badgeValidator.rules.issuedDate.name'),
         status: 'info',
-        message: 'Date d\'émission non spécifiée'
+        message: t('badgeValidator.rules.issuedDate.missing')
       });
     }
 
-    // Expiration validation
     if (badgeInfo.expiresOn) {
       const expiryDate = new Date(badgeInfo.expiresOn);
       const now = new Date();
-      
+
       if (expiryDate > now) {
         rules.push({
           id: 'expiry_date',
-          name: 'Date d\'expiration',
+          name: t('badgeValidator.rules.expiryDate.name'),
           status: 'pass',
-          message: 'Badge encore valide'
+          message: t('badgeValidator.rules.expiryDate.valid')
         });
       } else {
         rules.push({
           id: 'expiry_date',
-          name: 'Date d\'expiration',
+          name: t('badgeValidator.rules.expiryDate.name'),
           status: 'warning',
-          message: 'Badge expiré'
+          message: t('badgeValidator.rules.expiryDate.expired')
         });
       }
     } else {
       rules.push({
         id: 'expiry_date',
-        name: 'Date d\'expiration',
+        name: t('badgeValidator.rules.expiryDate.name'),
         status: 'info',
-        message: 'Pas de date d\'expiration (badge permanent)'
+        message: t('badgeValidator.rules.expiryDate.permanent')
       });
     }
 
-    // Evidence validation
     if (badgeInfo.badge.evidence && badgeInfo.badge.evidence.length > 0) {
       rules.push({
         id: 'evidence',
-        name: 'Preuves',
+        name: t('badgeValidator.rules.evidence.name'),
         status: 'pass',
-        message: `${badgeInfo.badge.evidence.length} preuve(s) disponible(s)`
+        message: t('badgeValidator.rules.evidence.available', { count: badgeInfo.badge.evidence.length })
       });
     } else {
       rules.push({
         id: 'evidence',
-        name: 'Preuves',
+        name: t('badgeValidator.rules.evidence.name'),
         status: 'info',
-        message: 'Aucune preuve fournie'
+        message: t('badgeValidator.rules.evidence.none')
       });
     }
 
@@ -224,7 +219,7 @@ export function BadgeValidator({ badgeInfo }: BadgeValidatorProps) {
   return (
     <Card className="p-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold">Rapport de validation</h3>
+        <h3 className="text-lg font-semibold">{t('badgeValidator.title')}</h3>
         <div className="flex space-x-2">
           <Badge variant="outline" className="bg-success/10 border-success/20 text-success">
             ✓ {passCount}
@@ -267,15 +262,15 @@ export function BadgeValidator({ badgeInfo }: BadgeValidatorProps) {
       <div className="mt-6 p-4 bg-accent/10 border border-accent/20 rounded-lg">
         <h4 className="font-medium text-sm flex items-center">
           <Info className="mr-2 h-4 w-4 text-accent" />
-          Résumé de validation
+          {t('badgeValidator.summary.title')}
         </h4>
         <p className="text-sm text-foreground/90 mt-1">
           {failCount > 0 ? (
-            `Ce badge présente ${failCount} erreur(s) critique(s) qui peuvent affecter sa validité.`
+            t('badgeValidator.summary.fail', { count: failCount })
           ) : warningCount > 0 ? (
-            `Ce badge est globalement valide mais présente ${warningCount} avertissement(s) à considérer.`
+            t('badgeValidator.summary.warning', { count: warningCount })
           ) : (
-            'Ce badge respecte tous les critères de validation et semble parfaitement conforme.'
+            t('badgeValidator.summary.success')
           )}
         </p>
       </div>

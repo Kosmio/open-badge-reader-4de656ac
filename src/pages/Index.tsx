@@ -9,18 +9,17 @@ import { BadgeInfo } from '@/components/badge-display';
 import { BadgeParser } from '@/components/badge-parser';
 import { BadgeStorage } from '@/utils/badge-storage';
 import jsBadgeImage from '@/assets/js-badge-example.png';
+import { useTranslation } from '@/i18n/LanguageProvider';
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
 
-  // Mock function to simulate badge verification
   const mockVerifyBadge = async (input: File | string): Promise<BadgeInfo> => {
-    // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Mock badge data
+
     return {
       version: '3.0',
       status: 'valid',
@@ -60,11 +59,10 @@ const Index = () => {
 
   const handleBadgeUpload = async (input: File | string) => {
     setIsLoading(true);
-    
+
     try {
       let badgeInfo: BadgeInfo;
-      
-      // Try real parsing first, fallback to mock if needed
+
       try {
         if (typeof input === 'string') {
           badgeInfo = await BadgeParser.parseFromUrl(input);
@@ -72,23 +70,22 @@ const Index = () => {
           badgeInfo = await BadgeParser.parseFromFile(input);
         }
       } catch (parseError) {
-        // Fallback to mock data for demo
         badgeInfo = await mockVerifyBadge(input);
       }
-      
-      // Sauvegarder le badge pour permettre le partage
+
       const badgeId = BadgeStorage.saveBadge(badgeInfo);
       navigate(`/result?id=${badgeId}`, { state: { badgeInfo } });
-      
+
       toast({
-        title: "Badge vérifié avec succès",
-        description: "Redirection vers les résultats...",
+        title: t('toasts.verification.success.title'),
+        description: t('toasts.verification.success.description'),
       });
     } catch (error) {
+      console.error(error);
       toast({
-        title: "Erreur de vérification",
-        description: error instanceof Error ? error.message : "Impossible de vérifier le badge. Veuillez réessayer.",
-        variant: "destructive",
+        title: t('toasts.verification.error.title'),
+        description: t('toasts.verification.error.description'),
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
@@ -97,7 +94,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
       <section className="relative py-20 px-4">
         <div className="absolute inset-0 bg-gradient-hero opacity-5" />
         <div className="container mx-auto text-center relative">
@@ -106,56 +102,53 @@ const Index = () => {
               <Shield className="h-12 w-12 text-primary-foreground" />
             </div>
           </div>
-          
+
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
-            OpenBadge Reader
+            {t('index.hero.title')}
           </h1>
-          
+
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            Vérifiez instantanément l'authenticité de vos Open Badges V2 et V3. 
-            Uploadez un fichier ou collez une URL pour une validation complète.
+            {t('index.hero.subtitle.line1')} {' '}
+            {t('index.hero.subtitle.line2')}
           </p>
 
           <div className="flex flex-wrap justify-center gap-4 mb-12">
             <div className="flex items-center space-x-2 bg-card/50 backdrop-blur-sm px-4 py-2 rounded-full border">
               <CheckCircle className="h-5 w-5 text-success" />
-              <span className="text-sm font-medium">Validation instantanée</span>
+              <span className="text-sm font-medium">{t('index.hero.badges.validation')}</span>
             </div>
             <div className="flex items-center space-x-2 bg-card/50 backdrop-blur-sm px-4 py-2 rounded-full border">
               <Award className="h-5 w-5 text-primary" />
-              <span className="text-sm font-medium">Open Badge V2 & V3</span>
+              <span className="text-sm font-medium">{t('index.hero.badges.openBadge')}</span>
             </div>
             <div className="flex items-center space-x-2 bg-card/50 backdrop-blur-sm px-4 py-2 rounded-full border">
               <Shield className="h-5 w-5 text-accent" />
-              <span className="text-sm font-medium">Sécurisé & privé</span>
+              <span className="text-sm font-medium">{t('index.hero.badges.secure')}</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Upload Section */}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-4xl">
           <BadgeUploader onBadgeUpload={handleBadgeUpload} isLoading={isLoading} />
         </div>
       </section>
 
-      {/* Features Section */}
       <section className="py-16 px-4 bg-accent/5">
         <div className="container mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12">
-            Pourquoi utiliser OpenBadge Reader ?
+            {t('index.features.title')}
           </h2>
-          
+
           <div className="grid gap-8 md:grid-cols-3">
             <Card className="p-6 text-center shadow-elevation hover:shadow-glow transition-smooth">
               <div className="p-3 bg-gradient-success rounded-full w-fit mx-auto mb-4">
                 <CheckCircle className="h-8 w-8 text-success-foreground" />
               </div>
-              <h3 className="text-xl font-semibold mb-3">Vérification complète</h3>
+              <h3 className="text-xl font-semibold mb-3">{t('index.features.cards.complete.title')}</h3>
               <p className="text-muted-foreground">
-                Analyse la structure, la signature cryptographique et la validité 
-                de vos badges selon les standards internationaux.
+                {t('index.features.cards.complete.description')}
               </p>
             </Card>
 
@@ -163,10 +156,9 @@ const Index = () => {
               <div className="p-3 bg-gradient-primary rounded-full w-fit mx-auto mb-4">
                 <Shield className="h-8 w-8 text-primary-foreground" />
               </div>
-              <h3 className="text-xl font-semibold mb-3">Sécurité garantie</h3>
+              <h3 className="text-xl font-semibold mb-3">{t('index.features.cards.security.title')}</h3>
               <p className="text-muted-foreground">
-                Vos badges ne sont pas stockés sur nos serveurs. 
-                Traitement en mémoire pour une confidentialité maximale.
+                {t('index.features.cards.security.description')}
               </p>
             </Card>
 
@@ -174,24 +166,22 @@ const Index = () => {
               <div className="p-3 bg-gradient-warning rounded-full w-fit mx-auto mb-4">
                 <Award className="h-8 w-8 text-warning-foreground" />
               </div>
-              <h3 className="text-xl font-semibold mb-3">Format universel</h3>
+              <h3 className="text-xl font-semibold mb-3">{t('index.features.cards.format.title')}</h3>
               <p className="text-muted-foreground">
-                Compatible avec tous les formats Open Badge : 
-                images PNG/SVG avec métadonnées intégrées ou fichiers JSON.
+                {t('index.features.cards.format.description')}
               </p>
             </Card>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="py-8 px-4 border-t bg-card/30">
         <div className="container mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="flex items-center space-x-2 mb-4 md:mb-0">
               <Shield className="h-6 w-6 text-primary" />
-              <span className="font-semibold">OpenBadge Reader</span>
-              <span className="text-muted-foreground">by Kosm.io</span>
+              <span className="font-semibold">{t('app.name')}</span>
+              <span className="text-muted-foreground">{t('app.by')}</span>
             </div>
 
             <div className="flex items-center space-x-4">
@@ -202,11 +192,11 @@ const Index = () => {
                   rel="noopener noreferrer"
                 >
                   <Github className="mr-2 h-4 w-4" />
-                  GitHub
+                  {t('app.github')}
                 </a>
               </Button>
               <span className="text-sm text-muted-foreground">
-                Open Source • MIT License
+                {t('index.footer.license')}
               </span>
             </div>
           </div>
