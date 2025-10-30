@@ -172,7 +172,9 @@ export function BadgeDisplay({ badgeInfo }: BadgeDisplayProps) {
               Critères d'obtention
             </h3>
             <p className="text-muted-foreground whitespace-pre-wrap">
-              {badgeInfo.badge.criteria || 'Aucun critère spécifié'}
+              {typeof badgeInfo.badge.criteria === 'string' 
+                ? badgeInfo.badge.criteria 
+                : 'Aucun critère spécifié'}
             </p>
           </Card>
 

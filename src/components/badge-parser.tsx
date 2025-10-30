@@ -64,10 +64,15 @@ export class BadgeParser {
 
   private static detectVersion(json: any): '2.0' | '3.0' {
     // V3 utilise des Verifiable Credentials avec @context
-    if (json['@context'] && 
-        (Array.isArray(json['@context']) && json['@context'].includes('https://www.w3.org/2018/credentials/v1')) ||
-        json['@context'] === 'https://www.w3.org/2018/credentials/v1') {
-      return '3.0';
+    const context = json['@context'];
+    if (context) {
+      // Check if it's a V3 context (can be string or array)
+      if (typeof context === 'string' && context.includes('spec/ob/v3p0')) {
+        return '3.0';
+      }
+      if (Array.isArray(context) && context.some(c => typeof c === 'string' && (c.includes('spec/ob/v3p0') || c.includes('credentials/v1')))) {
+        return '3.0';
+      }
     }
     
     // V2 utilise le format Open Badges 2.0
@@ -107,28 +112,41 @@ export class BadgeParser {
     const credentialSubject = json.credentialSubject || {};
     const status = this.determineStatus(json);
     
+    // Handle both full VC format and simplified Achievement format
+    const achievement = credentialSubject.achievement || json;
+    const issuerData = json.issuer || achievement.issuer || {};
+    
+    // Extract criteria - handle both string and object formats
+    let criteria = '';
+    const criteriaData = achievement.criteria;
+    if (typeof criteriaData === 'string') {
+      criteria = criteriaData;
+    } else if (criteriaData && typeof criteriaData === 'object') {
+      criteria = criteriaData.narrative || criteriaData.id || '';
+    }
+    
     return {
       version: '3.0',
       status,
       badge: {
-        name: credentialSubject.achievement?.name || 'Badge sans nom',
-        description: credentialSubject.achievement?.description || '',
-        image: credentialSubject.achievement?.image?.id || source,
-        criteria: credentialSubject.achievement?.criteria?.narrative || '',
-        evidence: this.parseEvidence(credentialSubject.evidence)
+        name: achievement.name || json.name || 'Badge sans nom',
+        description: achievement.description || json.description || '',
+        image: achievement.image?.id || achievement.image || json.image || source,
+        criteria,
+        evidence: this.parseEvidence(achievement.evidence || json.evidence)
       },
       issuer: {
-        name: json.issuer?.name || credentialSubject.achievement?.issuer?.name || 'Émetteur inconnu',
-        url: json.issuer?.url || credentialSubject.achievement?.issuer?.url,
-        email: json.issuer?.email
+        name: issuerData.name || 'Émetteur inconnu',
+        url: issuerData.url,
+        email: issuerData.email
       },
       recipient: {
         name: credentialSubject.name,
         email: credentialSubject.email,
         identity: credentialSubject.id
       },
-      issuedOn: json.issuanceDate,
-      expiresOn: json.expirationDate,
+      issuedOn: json.issuanceDate || json.validFrom,
+      expiresOn: json.expirationDate || json.validUntil,
       rawJson: json
     };
   }
