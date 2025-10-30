@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { QrCode, Camera, X } from 'lucide-react';
+import { QrCode, Camera } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Card } from '@/components/ui/card';
+import { useTranslation } from '@/i18n/LanguageProvider';
 
 interface QRScannerProps {
   onScan: (data: string) => void;
@@ -14,10 +15,9 @@ export function QRScanner({ onScan }: QRScannerProps) {
   const [error, setError] = useState<string>('');
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const { t } = useTranslation();
 
-  // Mock QR detection for demo purposes
   const mockQRDetection = () => {
-    // Simulate QR code detection after 3 seconds
     setTimeout(() => {
       const mockBadgeUrl = 'https://example.com/badge.json';
       onScan(mockBadgeUrl);
@@ -30,23 +30,22 @@ export function QRScanner({ onScan }: QRScannerProps) {
     try {
       setError('');
       setIsScanning(true);
-      
+
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'environment' }
       });
-      
+
       streamRef.current = stream;
-      
+
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         videoRef.current.play();
       }
-      
-      // Start mock QR detection
+
       mockQRDetection();
-      
+
     } catch (err) {
-      setError('Impossible d\'accéder à la caméra. Vérifiez les permissions.');
+      setError(t('qrScanner.error'));
       setIsScanning(false);
     }
   };
@@ -78,23 +77,23 @@ export function QRScanner({ onScan }: QRScannerProps) {
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           className="w-full bg-accent/10 hover:bg-accent/20 border-accent/30 transition-smooth"
         >
           <QrCode className="mr-2 h-4 w-4" />
-          Scanner un QR Code
+          {t('qrScanner.button')}
         </Button>
       </DialogTrigger>
-      
+
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
             <QrCode className="h-5 w-5 text-primary" />
-            <span>Scanner QR Code</span>
+            <span>{t('qrScanner.dialogTitle')}</span>
           </DialogTitle>
           <DialogDescription>
-            Pointez votre caméra vers un QR code contenant un badge Open Badge
+            {t('qrScanner.dialogDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -102,38 +101,35 @@ export function QRScanner({ onScan }: QRScannerProps) {
           {error ? (
             <Card className="p-4 bg-destructive/10 border-destructive/20">
               <p className="text-destructive text-sm">{error}</p>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="mt-2" 
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-2"
                 onClick={startCamera}
               >
-                Réessayer
+                {t('qrScanner.retry')}
               </Button>
             </Card>
           ) : (
             <div className="relative aspect-square bg-muted rounded-lg overflow-hidden">
               {isScanning ? (
                 <>
-                  <video 
+                  <video
                     ref={videoRef}
                     className="w-full h-full object-cover"
                     playsInline
                     muted
                   />
-                  
-                  {/* Scanning overlay */}
+
                   <div className="absolute inset-4 border-2 border-primary rounded-lg">
                     <div className="absolute inset-0 border border-primary/50 rounded-lg animate-pulse">
-                      {/* Corner markers */}
                       <div className="absolute top-0 left-0 w-6 h-6 border-l-2 border-t-2 border-primary"></div>
                       <div className="absolute top-0 right-0 w-6 h-6 border-r-2 border-t-2 border-primary"></div>
                       <div className="absolute bottom-0 left-0 w-6 h-6 border-l-2 border-b-2 border-primary"></div>
                       <div className="absolute bottom-0 right-0 w-6 h-6 border-r-2 border-b-2 border-primary"></div>
                     </div>
                   </div>
-                  
-                  {/* Scanning line animation */}
+
                   <div className="absolute inset-x-4 top-8 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent animate-pulse"></div>
                 </>
               ) : (
@@ -141,7 +137,7 @@ export function QRScanner({ onScan }: QRScannerProps) {
                   <div className="text-center space-y-2">
                     <Camera className="h-12 w-12 text-muted-foreground mx-auto" />
                     <p className="text-sm text-muted-foreground">
-                      Démarrage de la caméra...
+                      {t('qrScanner.cameraStarting')}
                     </p>
                   </div>
                 </div>
@@ -152,7 +148,7 @@ export function QRScanner({ onScan }: QRScannerProps) {
           {isScanning && (
             <div className="text-center space-y-2">
               <p className="text-sm text-muted-foreground">
-                Recherche d'un QR code...
+                {t('qrScanner.searching')}
               </p>
               <div className="flex items-center justify-center space-x-2">
                 <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>

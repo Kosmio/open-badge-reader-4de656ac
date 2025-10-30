@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import BadgeResult from "./pages/BadgeResult";
 import NotFound from "./pages/NotFound";
+import { LanguageSwitcher } from "@/components/language-switcher";
 
 const queryClient = new QueryClient();
 
@@ -15,6 +16,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <LanguageSwitcher />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/result" element={<BadgeResult />} />

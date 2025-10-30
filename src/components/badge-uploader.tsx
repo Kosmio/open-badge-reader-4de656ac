@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { QRScanner } from './qr-scanner';
+import { useTranslation } from '@/i18n/LanguageProvider';
 
 interface BadgeUploaderProps {
   onBadgeUpload: (file: File | string) => void;
@@ -15,6 +16,7 @@ export function BadgeUploader({ onBadgeUpload, isLoading = false }: BadgeUploade
   const [isDragOver, setIsDragOver] = useState(false);
   const [urlInput, setUrlInput] = useState('');
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -29,35 +31,33 @@ export function BadgeUploader({ onBadgeUpload, isLoading = false }: BadgeUploade
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(false);
-    
+
     const files = Array.from(e.dataTransfer.files);
     const file = files[0];
-    
+
     if (!file) return;
-    
-    // Validate file type
+
     const validTypes = ['image/png', 'image/svg+xml', 'application/json', 'image/jpeg'];
     if (!validTypes.includes(file.type)) {
       toast({
-        title: "Type de fichier non supporté",
-        description: "Veuillez uploader un fichier PNG, SVG, JSON ou JPEG.",
-        variant: "destructive",
+        title: t('badgeUploader.toasts.unsupportedType.title'),
+        description: t('badgeUploader.toasts.unsupportedType.description'),
+        variant: 'destructive',
       });
       return;
     }
-    
-    // Validate file size (10MB max)
+
     if (file.size > 10 * 1024 * 1024) {
       toast({
-        title: "Fichier trop volumineux",
-        description: "La taille maximum autorisée est de 10MB.",
-        variant: "destructive",
+        title: t('badgeUploader.toasts.fileTooLarge.title'),
+        description: t('badgeUploader.toasts.fileTooLarge.description'),
+        variant: 'destructive',
       });
       return;
     }
-    
+
     onBadgeUpload(file);
-  }, [onBadgeUpload, toast]);
+  }, [onBadgeUpload, toast, t]);
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -68,27 +68,26 @@ export function BadgeUploader({ onBadgeUpload, isLoading = false }: BadgeUploade
 
   const handleUrlSubmit = useCallback(() => {
     if (!urlInput.trim()) return;
-    
+
     try {
       new URL(urlInput);
       onBadgeUpload(urlInput.trim());
       setUrlInput('');
     } catch {
       toast({
-        title: "URL invalide",
-        description: "Veuillez saisir une URL valide.",
-        variant: "destructive",
+        title: t('badgeUploader.toasts.invalidUrl.title'),
+        description: t('badgeUploader.toasts.invalidUrl.description'),
+        variant: 'destructive',
       });
     }
-  }, [urlInput, onBadgeUpload, toast]);
+  }, [urlInput, onBadgeUpload, toast, t]);
 
   return (
     <div className="space-y-8">
-      {/* Drag & Drop Zone */}
       <Card
         className={`relative p-12 text-center border-2 border-dashed transition-smooth cursor-pointer
-          ${isDragOver 
-            ? 'border-primary bg-primary/5 shadow-glow' 
+          ${isDragOver
+            ? 'border-primary bg-primary/5 shadow-glow'
             : 'border-muted-foreground/30 hover:border-primary/50 hover:bg-accent/5'
           }
           ${isLoading ? 'opacity-50 pointer-events-none' : ''}
@@ -106,77 +105,74 @@ export function BadgeUploader({ onBadgeUpload, isLoading = false }: BadgeUploade
           onChange={handleFileSelect}
           disabled={isLoading}
         />
-        
+
         <div className="flex flex-col items-center space-y-4">
           <div className={`p-4 rounded-full bg-gradient-primary transition-smooth
             ${isDragOver ? 'animate-pulse scale-110' : ''}
           `}>
             <Upload className="h-8 w-8 text-primary-foreground" />
           </div>
-          
+
           <div>
             <h3 className="text-xl font-semibold mb-2">
-              Glissez-déposez votre badge ici
+              {t('badgeUploader.dropzone.title')}
             </h3>
             <p className="text-muted-foreground">
-              Formats supportés : PNG, SVG, JSON, JPEG
+              {t('badgeUploader.dropzone.supportedFormats')}
             </p>
             <p className="text-sm text-muted-foreground mt-1">
-              Taille maximum : 10MB
+              {t('badgeUploader.dropzone.maxSize')}
             </p>
           </div>
-          
+
           <Button variant="outline" disabled={isLoading}>
             <FileText className="mr-2 h-4 w-4" />
-            Sélectionner un fichier
+            {t('badgeUploader.dropzone.button')}
           </Button>
         </div>
       </Card>
 
-      {/* URL Input */}
       <Card className="p-6">
         <div className="space-y-4">
           <div className="flex items-center space-x-2">
             <Link2 className="h-5 w-5 text-primary" />
-            <h3 className="text-lg font-medium">Ou saisissez une URL</h3>
+            <h3 className="text-lg font-medium">{t('badgeUploader.urlSection.title')}</h3>
           </div>
-          
+
           <div className="flex space-x-2">
             <Input
-              placeholder="https://exemple.com/badge.png"
+              placeholder={t('badgeUploader.urlSection.placeholder')}
               value={urlInput}
               onChange={(e) => setUrlInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleUrlSubmit()}
               disabled={isLoading}
               className="flex-1"
             />
-          <Button 
-            onClick={handleUrlSubmit} 
-            disabled={!urlInput.trim() || isLoading}
-            className="bg-gradient-primary hover:shadow-glow transition-smooth"
-          >
-            Vérifier
-          </Button>
-        </div>
-        
-        <div className="mt-4">
-          <QRScanner onScan={(url) => {
-            setUrlInput(url);
-            onBadgeUpload(url);
-          }} />
-        </div>
-      </div>
-    </Card>
+            <Button
+              onClick={handleUrlSubmit}
+              disabled={!urlInput.trim() || isLoading}
+              className="bg-gradient-primary hover:shadow-glow transition-smooth"
+            >
+              {t('badgeUploader.urlSection.button')}
+            </Button>
+          </div>
 
-      {/* Help Section */}
+          <div className="mt-4">
+            <QRScanner onScan={(url) => {
+              setUrlInput(url);
+              onBadgeUpload(url);
+            }} />
+          </div>
+        </div>
+      </Card>
+
       <Card className="p-4 bg-accent/10 border-accent/30">
         <div className="flex items-start space-x-3">
           <AlertCircle className="h-5 w-5 text-accent mt-0.5" />
           <div>
-            <h4 className="font-medium text-foreground">À propos des Open Badges</h4>
+            <h4 className="font-medium text-foreground">{t('badgeUploader.help.title')}</h4>
             <p className="text-sm text-foreground/90 mt-1">
-              Les Open Badges V2 et V3 sont des certificats numériques vérifiables. 
-              Ils peuvent être intégrés dans des images PNG/SVG ou fournis en format JSON.
+              {t('badgeUploader.help.description')}
             </p>
           </div>
         </div>
