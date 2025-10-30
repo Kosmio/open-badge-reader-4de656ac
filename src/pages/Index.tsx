@@ -191,12 +191,16 @@ const Index = () => {
             <div className="flex items-center space-x-2 mb-4 md:mb-0">
               <Shield className="h-6 w-6 text-primary" />
               <span className="font-semibold">OpenBadge Reader</span>
-              <span className="text-muted-foreground">by Lovable</span>
+              <span className="text-muted-foreground">by Kosm.io</span>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <Button variant="ghost" size="sm" asChild>
-                <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+                <a
+                  href="https://github.com/Kosmio/open-badge-reader-4de656ac"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <Github className="mr-2 h-4 w-4" />
                   GitHub
                 </a>
