@@ -6,13 +6,15 @@ import { ArrowLeft, Download, Share2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { BadgeStorage } from '@/utils/badge-storage';
 import { useTranslation } from '@/i18n/LanguageProvider';
+import { SiteFooter } from '@/components/site-footer';
+import { generateBadgePdfReport } from '@/utils/pdf-report';
 
 export default function BadgeResult() {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [badgeInfo, setBadgeInfo] = useState<BadgeInfo | null>(location.state?.badgeInfo || null);
 
   useEffect(() => {
@@ -69,15 +71,27 @@ export default function BadgeResult() {
     }
   };
 
-  const handleDownloadReport = () => {
-    toast({
-      title: t('badgeResult.download.todo.title'),
-      description: t('badgeResult.download.todo.description'),
-    });
+  const handleDownloadReport = async () => {
+    if (!badgeInfo) return;
+
+    try {
+      await generateBadgePdfReport({ badgeInfo, language, t });
+      toast({
+        title: t('badgeResult.download.success.title'),
+        description: t('badgeResult.download.success.description'),
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: t('badgeResult.download.error.title'),
+        description: t('badgeResult.download.error.description'),
+        variant: 'destructive',
+      });
+    }
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -118,9 +132,10 @@ export default function BadgeResult() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 flex-1">
         <BadgeDisplay badgeInfo={badgeInfo} />
       </main>
+      <SiteFooter />
     </div>
   );
 }

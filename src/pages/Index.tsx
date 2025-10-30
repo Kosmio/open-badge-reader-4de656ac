@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BadgeUploader } from '@/components/badge-uploader';
-import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Shield, Award, CheckCircle, Github } from 'lucide-react';
+import { Shield, Award, CheckCircle } from 'lucide-react';
 import { BadgeInfo } from '@/components/badge-display';
 import { BadgeParser } from '@/components/badge-parser';
 import { BadgeStorage } from '@/utils/badge-storage';
 import jsBadgeImage from '@/assets/js-badge-example.png';
 import { useTranslation } from '@/i18n/LanguageProvider';
+import { SiteFooter } from '@/components/site-footer';
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -175,33 +175,7 @@ const Index = () => {
         </div>
       </section>
 
-      <footer className="py-8 px-4 border-t bg-card/30">
-        <div className="container mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <Shield className="h-6 w-6 text-primary" />
-              <span className="font-semibold">{t('app.name')}</span>
-              <span className="text-muted-foreground">{t('app.by')}</span>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm" asChild>
-                <a
-                  href="https://github.com/Kosmio/open-badge-reader-4de656ac"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Github className="mr-2 h-4 w-4" />
-                  {t('app.github')}
-                </a>
-              </Button>
-              <span className="text-sm text-muted-foreground">
-                {t('index.footer.license')}
-              </span>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 };

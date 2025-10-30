@@ -30,9 +30,19 @@ const resolveInitialLanguage = (): Language => {
     // Ignore storage errors and fallback to browser language
   }
 
-  const browserLanguage = typeof navigator !== 'undefined' ? navigator.language?.split('-')[0] : undefined;
-  if (browserLanguage && browserLanguage in translations) {
-    return browserLanguage as Language;
+  if (typeof navigator !== 'undefined') {
+    const preferredLanguages = Array.isArray(navigator.languages) && navigator.languages.length > 0
+      ? navigator.languages
+      : navigator.language
+        ? [navigator.language]
+        : [];
+
+    for (const lang of preferredLanguages) {
+      const normalized = lang?.split('-')[0];
+      if (normalized && normalized in translations) {
+        return normalized as Language;
+      }
+    }
   }
 
   return DEFAULT_LANGUAGE;
