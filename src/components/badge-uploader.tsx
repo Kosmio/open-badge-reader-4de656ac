@@ -169,12 +169,12 @@ export function BadgeUploader({ onBadgeUpload, isLoading = false }: BadgeUploade
     </Card>
 
       {/* Help Section */}
-      <Card className="p-4 bg-accent/20 border-accent/30">
+      <Card className="p-4 bg-accent/10 border-accent/30">
         <div className="flex items-start space-x-3">
-          <AlertCircle className="h-5 w-5 text-accent-foreground mt-0.5" />
+          <AlertCircle className="h-5 w-5 text-accent mt-0.5" />
           <div>
-            <h4 className="font-medium text-accent-foreground">À propos des Open Badges</h4>
-            <p className="text-sm text-accent-foreground/80 mt-1">
+            <h4 className="font-medium text-foreground">À propos des Open Badges</h4>
+            <p className="text-sm text-foreground/90 mt-1">
               Les Open Badges V2 et V3 sont des certificats numériques vérifiables. 
               Ils peuvent être intégrés dans des images PNG/SVG ou fournis en format JSON.
             </p>

@@ -256,7 +256,7 @@ export function BadgeValidator({ badgeInfo }: BadgeValidatorProps) {
                 </div>
                 <p className="text-sm text-muted-foreground mt-1">{rule.message}</p>
                 {rule.details && (
-                  <p className="text-xs text-muted-foreground/80 mt-1">{rule.details}</p>
+                  <p className="text-xs text-foreground/80 mt-1">{rule.details}</p>
                 )}
               </div>
             </div>
@@ -266,10 +266,10 @@ export function BadgeValidator({ badgeInfo }: BadgeValidatorProps) {
 
       <div className="mt-6 p-4 bg-accent/10 border border-accent/20 rounded-lg">
         <h4 className="font-medium text-sm flex items-center">
-          <Info className="mr-2 h-4 w-4 text-accent-foreground" />
+          <Info className="mr-2 h-4 w-4 text-accent" />
           Résumé de validation
         </h4>
-        <p className="text-sm text-accent-foreground/80 mt-1">
+        <p className="text-sm text-foreground/90 mt-1">
           {failCount > 0 ? (
             `Ce badge présente ${failCount} erreur(s) critique(s) qui peuvent affecter sa validité.`
           ) : warningCount > 0 ? (
