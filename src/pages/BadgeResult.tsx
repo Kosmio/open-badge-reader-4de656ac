@@ -100,7 +100,7 @@ export default function BadgeResult() {
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate('/')}
-                className="hover:bg-accent/20 transition-smooth"
+                className="transition-smooth"
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 {t('badgeResult.header.back')}
@@ -113,7 +113,7 @@ export default function BadgeResult() {
                 variant="outline"
                 size="sm"
                 onClick={handleShare}
-                className="hover:bg-accent/20 transition-smooth"
+                className="transition-smooth"
               >
                 <Share2 className="mr-2 h-4 w-4" />
                 {t('badgeResult.actions.share')}
@@ -122,7 +122,7 @@ export default function BadgeResult() {
                 variant="outline"
                 size="sm"
                 onClick={handleDownloadReport}
-                className="hover:bg-accent/20 transition-smooth"
+                className="transition-smooth"
               >
                 <Download className="mr-2 h-4 w-4" />
                 {t('badgeResult.actions.download')}

@@ -78,8 +78,8 @@ export function QRScanner({ onScan }: QRScannerProps) {
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button
-          variant="outline"
-          className="w-full bg-accent/10 hover:bg-accent/20 border-accent/30 transition-smooth"
+          variant="soft"
+          className="w-full transition-smooth"
         >
           <QrCode className="mr-2 h-4 w-4" />
           {t('qrScanner.button')}
